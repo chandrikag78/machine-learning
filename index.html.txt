@@ -1,0 +1,41 @@
+import numpy as np
+from scipy.stats import mode
+
+def predictDisease(symptoms, models):
+    symptoms = symptoms.split(",")
+    
+    # Create a dynamic input_data list based on the length of symptoms
+    input_data = [0] * len(data_dict["symptom_index"])
+    
+    for symptom in symptoms:
+        index = data_dict["symptom_index"].get(symptom)
+        if index is not None:  # Check if the symptom exists in the dictionary
+            input_data[index] = 1
+
+    input_data = np.array(input_data).reshape(1, -1)
+
+    # Generate individual outputs
+    rf_prediction = models["rf_model"].predict(input_data)[0]
+    nb_prediction = models["naive_bayes_model"].predict(input_data)[0]
+    svm_prediction = models["svm_model"].predict(input_data)[0]
+
+    # Make the final prediction by taking mode of all predictions
+    final_prediction = mode([rf_prediction, nb_prediction, svm_prediction])[0][0]
+
+    predictions = {
+        "rf_model_prediction": rf_prediction,
+        "naive_bayes_prediction": nb_prediction,
+        "svm_model_prediction": svm_prediction,
+        "final_prediction": final_prediction
+    }
+
+    return predictions
+
+# Testing the function
+models_to_test = {
+    "rf_model": final_rf_model,
+    "naive_bayes_model": final_nb_model,
+    "svm_model": final_svm_model
+}
+
+print(predictDisease("Itching,Skin Rash,Nodal Skin Eruptions", models_to_test))
